@@ -37,10 +37,10 @@ class WhisperProcessor:
         temp_wav = tempfile.NamedTemporaryFile(suffix=".wav", delete=False).name
 
         try:
-            print("🟡 Đang trích xuất âm thanh từ video bằng moviepy...")
+            print("Đang trích xuất âm thanh từ video bằng moviepy...")
             clip = VideoFileClip(path)
             clip.audio.write_audiofile(temp_wav, fps=16000, codec="pcm_s16le")
-            print("✅ Đã trích xuất:", temp_wav)
+            print("Đã trích xuất:", temp_wav)
         except Exception as e:
             print("Lỗi khi dùng moviepy để trích audio:", e)
             raise RuntimeError("Failed to extract audio using moviepy") from e
