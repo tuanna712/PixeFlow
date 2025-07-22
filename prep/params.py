@@ -7,3 +7,6 @@ CO_DETR_DIR = "../data/models/CoDetr" # Facebook/detr-resnet-101
 
 # BLIP model directory for frame captioning
 BLIP_DIR = "../data/models/BLIP" # Salesforce/blip-image-captioning-base
+
+# CLIP model directory for image embedding
+CLIP_DIR = "../data/models/CLIP" # openai/clip-vit-base-patch32
