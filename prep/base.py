@@ -52,11 +52,36 @@ class Video(Entity):
             print(f"Video '{self.path}' does not exist.")
         return metadata
 
-class Image(Entity):
-    def __init__(self, id, name, path):
-        super().__init__(id, name)
-        self.path = path
-        ...
+    
+class Frame(Entity):
+    def __init__(self, id):
+        super().__init__(id)
+        self.id = id
+        self.video_id = None
+        self.timestamp = None
+        self.bs64 = None
+        self.ocr = None
+        self.objects = None
+        self.transcription = None
+        self.description = None
+        self.caption = None
+        self.embeddings = None
+        
+    def to_timestamp_ms(self):
+        """
+        Convert the timestamp to milliseconds.
+        """
+        if self.timestamp is not None:
+            return int(self.timestamp * 1000)
+        return None
+    
+    def to_timestamp_s(self, timestamp_ms_):
+        """
+        Convert milliseconds to seconds.
+        """
+        if timestamp_ms_ is not None:
+            return timestamp_ms_ / 1000.0
+        return None
 
 class Segment:
     def __init__(self, image, coordinates):

@@ -1,0 +1,5 @@
+# brew install ffmpeg
+ffmpeg-python==0.2.0
+tensorflow==2.18.1
+opencv-python==4.12.0.88
+pillow==11.3.0
