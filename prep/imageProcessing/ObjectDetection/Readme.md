@@ -6,7 +6,7 @@ Publication: [(2020) End-to-End Object Detection with Transformers](https://arxi
 
 ```python
 import os, shutil
-sys.path.append(str(Path('image_proc.ipynb').resolve().parents[3]))
+sys.path.append(str(Path('impl.ipynb').resolve().parents[3]))
 from transformers import DetrImageProcessor, DetrForObjectDetection
 from prep.params import CO_DETR_DIR
 
