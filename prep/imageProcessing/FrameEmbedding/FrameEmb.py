@@ -1,14 +1,14 @@
-import base64
+import sys, base64
 from PIL import Image
-import sys
 from io import BytesIO
 from pathlib import Path
+
+sys.path.append(str(Path('impl.ipynb').resolve().parents[3]))
 
 import torch
 from prep.params import CLIP_DIR
 from transformers import CLIPProcessor, CLIPModel
 
-sys.path.append(str(Path('impl.ipynb').resolve().parents[3]))
 
 
 class ClipEncoder:
