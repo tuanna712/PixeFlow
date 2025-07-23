@@ -4,16 +4,15 @@ from io import BytesIO
 from pathlib import Path
 
 sys.path.append(str(Path('impl.ipynb').resolve().parents[3]))
-from prep.params import CO_DETR_DIR
 
 import torch
 from transformers import DetrImageProcessor, DetrForObjectDetection
 
 class ObjectDetector:
-    def __init__(self):
+    def __init__(self, co_detr_dir):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
-        self.processor = DetrImageProcessor.from_pretrained("../../"+CO_DETR_DIR)
-        self.model = DetrForObjectDetection.from_pretrained("../../"+CO_DETR_DIR)
+        self.processor = DetrImageProcessor.from_pretrained(co_detr_dir)
+        self.model = DetrForObjectDetection.from_pretrained(co_detr_dir)
         self.model.to(self.device)
         self.returns= {}
 

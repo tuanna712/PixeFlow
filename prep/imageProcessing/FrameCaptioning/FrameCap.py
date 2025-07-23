@@ -5,16 +5,15 @@ from io import BytesIO
 from pathlib import Path
 
 sys.path.append(str(Path('impl.ipynb').resolve().parents[3]))
-from prep.params import BLIP_DIR
 
 import torch
 from transformers import AutoProcessor, BlipForConditionalGeneration
 
 class BlipCaptioner:
-    def __init__(self):
+    def __init__(self, blip_dir):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
-        self.processor = AutoProcessor.from_pretrained("../../"+BLIP_DIR)
-        self.model = BlipForConditionalGeneration.from_pretrained("../../"+BLIP_DIR)
+        self.processor = AutoProcessor.from_pretrained(blip_dir)
+        self.model = BlipForConditionalGeneration.from_pretrained(blip_dir)
         self.model.to(self.device)
 
     def caption(self, image_bs64):

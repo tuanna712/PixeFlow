@@ -6,16 +6,15 @@ from pathlib import Path
 sys.path.append(str(Path('impl.ipynb').resolve().parents[3]))
 
 import torch
-from prep.params import CLIP_DIR
 from transformers import CLIPProcessor, CLIPModel
 
 
 
 class ClipEncoder:
-    def __init__(self):
+    def __init__(self, clip_dir):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu")
-        self.processor = CLIPProcessor.from_pretrained("../../"+CLIP_DIR)
-        self.model = CLIPModel.from_pretrained("../../"+CLIP_DIR)
+        self.processor = CLIPProcessor.from_pretrained(clip_dir)
+        self.model = CLIPModel.from_pretrained(clip_dir)
         self.model.to(self.device)
 
     def text_encode(self, text):
