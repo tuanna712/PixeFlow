@@ -65,6 +65,7 @@ class FrameExtractor(TransNetV2):
             if bs64 is not None:
                 frame = Frame(str(uuid.uuid4()))
                 frame.video_id = self.id
+                frame.frame_index = frame_idx
                 frame.timestamp = timestamp
                 frame.bs64 = bs64
                 self.frames.append(frame)

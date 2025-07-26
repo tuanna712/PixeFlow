@@ -1,11 +1,10 @@
 import sqlite3
 
-class MetadataDB:
+class SQLStore:
     def __init__(self, db_path):
         self.db_path = db_path
         self.conn = sqlite3.connect(db_path)
         self.cursor = self.conn.cursor()
-        self.create_tables()
 
     def check_table_exists(self, table_name):
         self.cursor.execute("""
@@ -29,7 +28,8 @@ class MetadataDB:
         else:
             print(f"Table '{table_name}' does not exist.")
 
-    def create_tables(self):
+    # Create TABLES
+    def create_video_table(self):
         self.cursor.execute("""
         CREATE TABLE IF NOT EXISTS Video (
             id TEXT PRIMARY KEY,
@@ -39,12 +39,68 @@ class MetadataDB:
             size_mb REAL,
             format TEXT,
             last_modified TEXT,
-            creation_time TEXT
+            creation_time TEXT,
+            processed BOOLEAN DEFAULT 0
         )
         """)
         print("Tables 'Video' created or already exist.")
         self.conn.commit()
 
+    def create_frame_table(self):
+        self.cursor.execute("""
+        CREATE TABLE IF NOT EXISTS Frame (
+            id TEXT PRIMARY KEY,
+            video_id TEXT,
+            frame_index INTEGER,
+            timestamp REAL,
+            bs64 TEXT,
+            processed BOOLEAN DEFAULT 0,
+            FOREIGN KEY (video_id) REFERENCES Video(id)
+        )
+        """)
+        print("Tables 'Frame' created or already exist.")
+        self.conn.commit()
+
+    # Frame CRUD operations
+    def insert_frame(self, frame_data):
+        self.cursor.execute("""
+        INSERT OR REPLACE INTO Frame (id, video_id, frame_index, timestamp, bs64, processed)
+        VALUES (?, ?, ?, ?, ?, ?)
+        """, frame_data)
+        self.conn.commit()
+
+    def fetch_frames(self):
+        self.cursor.execute("SELECT * FROM Frame")
+        return self.cursor.fetchall()
+    
+    def fetch_frame_by_id(self, frame_id):
+        self.cursor.execute("SELECT * FROM Frame WHERE id=?", (frame_id,))
+        return self.cursor.fetchone()
+    
+    def fetch_frames_by_video_id(self, video_id):
+        self.cursor.execute("SELECT * FROM Frame WHERE video_id=?", (video_id,))
+        return self.cursor.fetchall()
+    
+    def update_frame(self, frame_id, frame_data):
+        self.cursor.execute("""
+        UPDATE Frame SET video_id=?, frame_index=?, timestamp=?, base64=?
+        WHERE id=?
+        """, (*frame_data[1:], frame_id))
+        self.conn.commit()
+
+    def delete_frame(self, frame_id):
+        self.cursor.execute("DELETE FROM Frame WHERE id=?", (frame_id,))
+        self.conn.commit()
+
+    def delete_frames_by_video_id(self, video_id):
+        self.cursor.execute("DELETE FROM Frame WHERE video_id=?", (video_id,))
+        self.conn.commit()
+
+    def delete_all_frames(self):
+        self.cursor.execute("DELETE FROM Frame")
+        self.conn.commit()
+
+    # Video CRUD operations
     def insert_video(self, video_data):
         self.cursor.execute("""
         INSERT OR REPLACE INTO Video (id, path, name, size, size_mb, format, last_modified, creation_time)
@@ -84,4 +140,5 @@ class MetadataDB:
         self.conn.commit()
 
     def close(self):
+        print("Closing database connection.")
         self.conn.close()
