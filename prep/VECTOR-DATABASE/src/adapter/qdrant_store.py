@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Tuple
 import numpy as np
 from loguru import logger
 
-class QdrantVectorStore:
+class QdrantStore:
     def __init__(self, url: str, api_key: str, collection_name: str, 
                  vector_sizes: Dict[str, int]):
         self.client = QdrantClient(url=url, api_key=api_key)
@@ -46,6 +46,11 @@ class QdrantVectorStore:
         self.client.create_payload_index(
             collection_name=self.collection,
             field_name="keyframe_id",
+            field_schema=models.PayloadSchemaType.KEYWORD
+        )
+        self.client.create_payload_index(
+            collection_name=self.collection,
+            field_name="labels",
             field_schema=models.PayloadSchemaType.KEYWORD
         )
     

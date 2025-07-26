@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Any, Optional, Dict, List
 
-dataclass
+@dataclass
 class EmbeddingRecord:
     id: int | None
     video_id: str

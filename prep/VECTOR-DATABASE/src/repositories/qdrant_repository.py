@@ -23,6 +23,7 @@ class QdrantEmbeddingRepository(EmbeddingRepository):
             payload={
                 "video_id": record.video_id,
                 "keyframe_id": record.keyframe_id,
+                "labels": record.extra_info.get("labels", []),
             }
         )
         return new_id
@@ -35,6 +36,7 @@ class QdrantEmbeddingRepository(EmbeddingRepository):
             payload={
                 "video_id": record.video_id,
                 "keyframe_id": record.keyframe_id,
+                "labels": record.extra_info.get("labels", []),
             }
         )
     
