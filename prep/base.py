@@ -19,7 +19,6 @@ class DataDirectory:
         self.path = path
         self.files = self.list_all_files()
         self.videos = []
-        self.search_videos()
 
     def list_all_files(self):
         return [os.path.join(self.path, file) for file in os.listdir(self.path) if os.path.isfile(os.path.join(self.path, file))]
@@ -57,6 +56,7 @@ class Frame(Entity):
     def __init__(self, id):
         super().__init__(id)
         self.video_id = None
+        self.frame_index = None
         self.timestamp = None
         self.bs64 = None
         self.ocr = None
