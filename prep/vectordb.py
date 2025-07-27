@@ -57,15 +57,28 @@ class QdrantStore:
             field_schema="keyword",
         )
         
+        from qdrant_client.http.models import (
+            PayloadFieldSchema,
+            TextIndexParams,
+            TokenizerType
+        )
         self.client.create_payload_index(
             collection_name=self.collection_name,
             field_name="caption",
-            field_schema=models.TextIndexParams(
+            # field_schema=models.TextIndexParams(
+            #     type="text",
+            #     tokenizer=models.TokenizerType.WORD,
+            #     lowercase=True,
+            #     phrase_matching=True,
+            # ),
+            field_schema=PayloadFieldSchema(
                 type="text",
-                tokenizer=models.TokenizerType.WORD,
-                lowercase=True,
-                phrase_matching=True,
-            ),
+                params=TextIndexParams(
+                    tokenizer=TokenizerType.WORD,
+                    lowercase=True,
+                    phrase_matching=True
+                )
+            )
         )
     
     def upsert(self, frame: Frame):
@@ -172,7 +185,7 @@ class QdrantStore:
                     must=[
                         models.FieldCondition(
                             key="caption",
-                            match=models.MatchPhrase(phrase=keywords),
+                            match=models.MatchPhrase(phrase=str(keywords)),
                         )
                     ]
                 ),

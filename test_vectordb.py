@@ -4,7 +4,6 @@ import uuid
 import numpy as np
 from dotenv import load_dotenv
 import os
-from qdrant_client import QdrantClient
 
 load_dotenv()
 
