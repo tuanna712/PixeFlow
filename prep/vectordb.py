@@ -102,7 +102,9 @@ class QdrantStore:
             collection_name=self.collection_name,
             points=point
         )
-    
+        
+        logger.info(f"Upserted frame {frame_id} into collection {self.collection_name}.")
+            
     def delete(self, point_ids):
         self.client.delete(
             collection_name=self.collection_name,
