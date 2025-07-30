@@ -16,7 +16,7 @@ COLLECTION_NAME = "VectorDB_Test"
 store = QdrantStore(
     collection_name=COLLECTION_NAME,
     vector_sizes={"image": 512},
-    mode="cloud",
+    mode="local",
     url=QDRANT_CLOUD_URL,
     api_key=QDRANT_API_KEY,
 )
@@ -41,7 +41,7 @@ store.upsert(frame2)
 
 # 5. Semantic search (tìm theo vector gần nhất)
 results = store.sematic_search(
-    embeddings=frame1.embeddings,
+    embeddings=(np.array(frame1.embeddings) * 1.1).tolist(),
     filter={"video_id": frame1.video_id},
     top_k=3
 )
@@ -51,18 +51,42 @@ for result in results:
     print(result)
 
 # 6. Keyword search theo object
-scroll_result, _ = store.keyword_search(["car", "London"], keyword_type="objects")
+scroll_result, _ = store.keyword_search(["car", "London"], keyword_type="objects", top_k=3)
 
 print("\nKeyword scroll result:")
 for point in scroll_result:
     print(f"ID: {point.id}, Payload: {point.payload}")
 
 # 7. Keyword search theo caption
-scroll_result, _ = store.keyword_search("red car", keyword_type="caption")
+scroll_result, _ = store.keyword_search("red car", keyword_type="caption", top_k=3)
 
 print("\nCaption phrase search:")
 for point in scroll_result:
     print(f"ID: {point.id}, Payload: {point.payload}")
 
 # 8. Clean-up (xóa theo video_id)
-store.remove_by_video_id(frame1.video_id)
+# store.remove_by_video_id(frame1.video_id)
+
+from qdrant_client import QdrantClient
+
+client = QdrantClient(host="localhost", port=6333)
+
+all_points = []
+scroll_offset = None
+
+while True:
+    result, scroll_offset = client.scroll(
+        collection_name="VectorDB_Test",
+        limit=100,
+        offset=scroll_offset,
+        with_payload=True,
+        with_vectors=False
+    )
+    
+    all_points.extend(result)
+    
+    if scroll_offset is None:
+        break
+
+for i, point in enumerate(all_points):
+    print(f"\n{i+1}. ID: {point.id}, Payload: {point.payload}")
