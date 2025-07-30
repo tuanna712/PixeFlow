@@ -214,6 +214,7 @@ test.ipynb
 data/sample/
 data/images/
 data/sqlite/
+data/vectordb/
 
 # Extracted frames directories
 scene_frames/

@@ -65,7 +65,8 @@ class Frame(Entity):
         self.transcription = None
         self.description = None
         self.caption = None
-        self.embeddings = None
+        self.cap_embeds = None
+        self.img_embeds = None
         
     def to_timestamp_ms(self):
         """
