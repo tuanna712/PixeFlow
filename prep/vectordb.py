@@ -57,11 +57,6 @@ class QdrantStore:
             field_schema="keyword",
         )
         
-        from qdrant_client.http.models import (
-            PayloadFieldSchema,
-            TextIndexParams,
-            TokenizerType
-        )
         self.client.create_payload_index(
             collection_name=self.collection_name,
             field_name="caption",
