@@ -73,6 +73,14 @@ class SQLStore:
         self.cursor.execute("SELECT * FROM Frame")
         return self.cursor.fetchall()
     
+    def fetch_unprocessed_frames(self):
+        self.cursor.execute("SELECT id FROM Frame WHERE processed=0")
+        return self.cursor.fetchall()
+    
+    def fetch_processed_frames(self):
+        self.cursor.execute("SELECT id FROM Frame WHERE processed=1")
+        return self.cursor.fetchall()
+    
     def fetch_frame_by_id(self, frame_id):
         self.cursor.execute("SELECT * FROM Frame WHERE id=?", (frame_id,))
         return self.cursor.fetchone()
@@ -86,6 +94,13 @@ class SQLStore:
         UPDATE Frame SET video_id=?, frame_index=?, timestamp=?, base64=?
         WHERE id=?
         """, (*frame_data[1:], frame_id))
+        self.conn.commit()
+
+    def update_frame_processed(self, frame_id, processed):
+        self.cursor.execute("""
+        UPDATE Frame SET processed=?
+        WHERE id=?
+        """, (processed, frame_id))
         self.conn.commit()
 
     def delete_frame(self, frame_id):
