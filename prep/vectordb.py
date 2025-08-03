@@ -144,7 +144,7 @@ class QdrantStore:
             with_payload=with_payload,
         )
         
-        return [{"frame_id": point.id, "payload": point.payload} for point in results.points]
+        return [{"frame_id": point.id, "payload": point.payload, "score": point.score} for point in results.points]
     
     def keyword_search(self, keywords, keyword_type="objects", top_k=10):
         
