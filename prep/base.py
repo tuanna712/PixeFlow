@@ -55,7 +55,6 @@ class Video(Entity):
 class Frame(Entity):
     def __init__(self, id):
         super().__init__(id)
-        self.id = id
         self.video_id = None
         self.frame_index = None
         self.timestamp = None

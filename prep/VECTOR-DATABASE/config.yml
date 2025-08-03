@@ -1,5 +1,0 @@
-COLLECTION_NAME: "VectorDB_AI_Challenge_2025"
-VECTOR_SIZES:
-  image: 512  # Kích thước vector cho image
-  text: 512   # Kích thước vector cho text từ OCR
-DB_PATH: metadata.db

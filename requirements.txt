@@ -1,5 +1,5 @@
-torch==2.0.1
-tensorflow==2.18.1
+torch
+tensorflow
 # brew install ffmpeg
 ffmpeg-python==0.2.0
 pillow==11.3.0
