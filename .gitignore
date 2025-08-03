@@ -215,9 +215,10 @@ data/sample/
 data/images/
 data/sqlite/
 data/vectordb/
+data/models/
 
 # Extracted frames directories
 scene_frames/
 
 # Models directories
-models/
+# models/
