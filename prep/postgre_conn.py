@@ -2,11 +2,11 @@ import psycopg2
 from psycopg2 import Error
 
 class PostgresDB:
-    def __init__(self):
+    def __init__(self, PASSWORD):
         self.host = "34.63.214.230"
         self.database = "pixelflow"
         self.user = "hcmai25"
-        self.password = "PixelFlow"
+        self.password = PASSWORD
         self.port = "5432"
         self.connection = None
         self.cursor = None
