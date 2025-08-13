@@ -6,7 +6,7 @@ class PostgresDB:
         self.host = "34.63.214.230"
         self.database = "pixelflow"
         self.user = "hcmai25"
-        self.password = ""
+        self.password = "PixelFlow"
         self.port = "5432"
         self.connection = None
         self.cursor = None
