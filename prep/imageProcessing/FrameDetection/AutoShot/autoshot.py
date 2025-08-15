@@ -477,7 +477,7 @@ def process_single_video(video_path: str, shot_detector: AutoShot, keyframe_extr
 
     return result
 
-def process_videos(video_path: str, pretrained_model_path: str, keyframe_dir: str, device) -> Dict[str, Dict[str, Any]]:
+def process_videos(video_path: str, pretrained_model_path: str, keyframe_dir: str) -> Dict[str, Dict[str, Any]]:
     """
     Process all videos in the input directory.
 
@@ -489,7 +489,7 @@ def process_videos(video_path: str, pretrained_model_path: str, keyframe_dir: st
     Returns:
         Dict[str, Dict[str, Any]]: A dictionary of processing results for each video.   
     """
-    shot_detector = AutoShot(pretrained_model_path, device)
+    shot_detector = AutoShot(pretrained_model_path)
     keyframe_extractor = KeyFrameExtractor(keyframe_dir)
 
     results = {}
