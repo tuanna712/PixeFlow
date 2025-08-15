@@ -153,7 +153,7 @@ class AutoShot:
         """
         predictions= []
         
-        for batch in tqdm(get_batches(frames=frames), desc="Dectecting shots", unit="batch"):
+        for batch in tqdm(get_batches(frames=frames), disable=True): #, desc="Dectecting shots", unit="batch"):
             prediction = self.predict(batch=batch)
             predictions.append(prediction[25:75])
         
@@ -414,7 +414,7 @@ class KeyFrameExtractor:
         
         saved_frames = []
         for frame_idx, frame in self.extract_keyframes(video_path, scenes, output_prefix):
-            keyframe_filename = f"{frame_idx:08d}.webp"
+            keyframe_filename = f"{frame_idx}.webp"
             keyframe_path = os.path.join(video_keyframe_dir, keyframe_filename)
             
             if self.save_frame(frame=frame, filename=keyframe_path):

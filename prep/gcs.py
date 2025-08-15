@@ -98,7 +98,7 @@ class GCSManager:
             blob.upload_from_filename(source_file_path)
             blob.make_public()
             public_url = blob.public_url
-            print(f"File '{source_file_path}' uploaded to '{destination_blob_name}'.")
+            # print(f"File '{source_file_path}' uploaded to '{destination_blob_name}'.")
             return public_url
         except Exception as e:
             print(f"Error uploading file: {e}")
@@ -306,7 +306,23 @@ class GCSManager:
         except Exception as e:
             print(f"Error making file private: {e}")
             
+    def clean_all_files(self):
+        """
+        Deletes all files in the bucket.
+        """
+        if not self.bucket:
+            return
 
+        try:
+            blobs = self.bucket.list_blobs()
+            if not blobs:
+                print("No files found.")
+                return
+
+            self.bucket.delete_blobs(blobs)
+            print("Deleted all files.")
+        except Exception as e:
+            print(f"Error deleting files: {e}")
 """
 EXAMPLE USAGES
 # ==== Upload file to blob ====
