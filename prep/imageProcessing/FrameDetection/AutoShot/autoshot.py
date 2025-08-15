@@ -112,7 +112,7 @@ class AutoShot:
             if not os.path.exists(pretrained_path):
                 raise FileNotFoundError(f"Can't find the pretrained model path at {pretrained_path}")
             
-            print(f"Loading the pretrained model from {pretrained_path}")
+            print(f"Loading the pretrained model!")# from {pretrained_path}")
             model_dict = model.state_dict()
             pretrained_dict = torch.load(pretrained_path, map_location=self.device, weights_only=True)
             pretrained_dict = {k: v for k, v in pretrained_dict['net'].items() if k in model_dict}
