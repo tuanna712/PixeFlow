@@ -99,7 +99,7 @@ class VinternDescriptor:
         pixel_values = torch.stack(pixel_values)
         return pixel_values
 
-    def get_description(self, image, question="<image>\nDescript image into Vietnamese."):
+    def get_description(self, image, question="<image>\nMô tả chi tiết ảnh, bao gồm: bối cảnh, các đối tượng chính, vị trí và hành động, màu sắc nổi bật, cùng với văn bản xuất hiện (nếu có)."):
         pixel_values = self.load_image(Image.fromarray(image), max_num=6).to(torch.bfloat16).cuda()
         response, history = self.model.chat(self.tokenizer, pixel_values, question, self.generation_config, history=None, return_history=True)
         return response
