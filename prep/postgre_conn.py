@@ -139,6 +139,34 @@ class PostgresDB:
         print("Tables 'Frame' created or already exist.")
         self.connection.commit()
 
+    def create_btc_frame_table(self):
+        """Creates the 'BTC_Frame' table if it doesn't exist."""
+        if not self.connection:
+            return
+        self.cursor.execute("""
+        CREATE TABLE IF NOT EXISTS btc_frame (
+            id TEXT PRIMARY KEY,
+            video_id TEXT,
+            frame_index INTEGER,
+            frame_path TEXT,
+            frame_url TEXT,
+
+            ocr TEXT DEFAULT NULL,
+            objects TEXT DEFAULT NULL,
+            transcription TEXT DEFAULT NULL,
+            description TEXT DEFAULT NULL,
+            caption TEXT DEFAULT NULL,
+
+            processed BOOLEAN DEFAULT FALSE,
+            hold BOOLEAN DEFAULT FALSE,
+            hold_by TEXT DEFAULT NULL,
+            processed_by TEXT DEFAULT NULL,
+            FOREIGN KEY (video_id) REFERENCES video(id)
+        )
+        """)
+        print("Tables 'BTC_Frame' created or already exist.")
+        self.connection.commit()
+
     # Frame CRUD operations
     def insert_frame(self, frame_data):
         """Inserts a new frame or replaces an existing one based on id."""
@@ -148,6 +176,30 @@ class PostgresDB:
         # Check if video_id and frame_index are in database
         def get_frame_indexes_by_video_id(video_id):
             self.cursor.execute("SELECT frame_index FROM frame WHERE video_id=%s", (video_id,))
+            return [row[0] for row in self.cursor.fetchall()]
+        processed_frame_indexes = get_frame_indexes_by_video_id(frame_data[1])
+        if frame_data[2] in processed_frame_indexes:
+            print(f"Frame with video_id '{frame_data[1]}' and frame_index '{frame_data[2]}' already exists. Skipping insert.")
+        else:
+            self.cursor.execute("""
+            INSERT INTO frame (id, video_id, frame_index, frame_path, frame_url)
+            VALUES (%s, %s, %s, %s, %s)
+            ON CONFLICT (id) DO UPDATE SET
+                video_id = EXCLUDED.video_id,
+                frame_index = EXCLUDED.frame_index,
+                frame_path = EXCLUDED.frame_path,
+                frame_url = EXCLUDED.frame_url
+            """, frame_data)
+            self.connection.commit()
+    
+    def insert_btc_frame(self, frame_data):
+        """Inserts a new frame or replaces an existing one based on id."""
+        if not self.connection:
+            print("No database connection.")
+            return
+        # Check if video_id and frame_index are in database
+        def get_frame_indexes_by_video_id(video_id):
+            self.cursor.execute("SELECT frame_index FROM btc_frame WHERE video_id=%s", (video_id,))
             return [row[0] for row in self.cursor.fetchall()]
         processed_frame_indexes = get_frame_indexes_by_video_id(frame_data[1])
         if frame_data[2] in processed_frame_indexes:
