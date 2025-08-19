@@ -244,11 +244,11 @@ class PostgresDB:
         self.cursor.execute("SELECT * FROM frame WHERE id=%s", (frame_id,))
         return self.cursor.fetchone()
     
-    def fetch_frames_by_video_id(self, video_id):
+    def fetch_frames_by_video_id(self, video_id, table_name='frame'):
         """Fetches all frames associated with a given video id."""
         if not self.connection:
             return []
-        self.cursor.execute("SELECT * FROM frame WHERE video_id=%s", (video_id,))
+        self.cursor.execute("SELECT * FROM {} WHERE video_id=%s".format(table_name), (video_id,))
         return self.cursor.fetchall()
     
     def update_frame(self, frame_id, frame_data):
@@ -278,11 +278,11 @@ class PostgresDB:
         self.cursor.execute("DELETE FROM frame WHERE id=%s", (frame_id,))
         self.connection.commit()
 
-    def delete_frames_by_video_id(self, video_id):
+    def delete_frames_by_video_id(self, video_id, table_name='frame'):
         """Deletes all frames for a specific video."""
         if not self.connection:
             return
-        self.cursor.execute("DELETE FROM frame WHERE video_id=%s", (video_id,))
+        self.cursor.execute("DELETE FROM {} WHERE video_id=%s".format(table_name), (video_id,))
         self.connection.commit()
 
     def delete_all_frames(self):
