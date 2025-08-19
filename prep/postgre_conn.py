@@ -202,9 +202,11 @@ class PostgresDB:
             self.cursor.execute("SELECT frame_index FROM btc_frame WHERE video_id=%s", (video_id,))
             return [row[0] for row in self.cursor.fetchall()]
         processed_frame_indexes = get_frame_indexes_by_video_id(frame_data[1])
+        print(frame_data[2], processed_frame_indexes)
         if frame_data[2] in processed_frame_indexes:
             print(f"Frame with video_id '{frame_data[1]}' and frame_index '{frame_data[2]}' already exists. Skipping insert.")
         else:
+            print("Add new one!")
             self.cursor.execute("""
             INSERT INTO btc_frame (id, video_id, frame_index, frame_path, frame_url)
             VALUES (%s, %s, %s, %s, %s)
