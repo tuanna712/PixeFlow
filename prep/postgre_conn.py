@@ -191,7 +191,18 @@ class PostgresDB:
                 frame_url = EXCLUDED.frame_url
             """, frame_data)
             self.connection.commit()
-    
+    # Check if video_id and frame_index are in database
+    def get_frame_indexes_by_video_id(self, video_id):
+        self.cursor.execute("SELECT frame_index FROM btc_frame WHERE video_id=%s", (video_id,))
+        return [row[0] for row in self.cursor.fetchall()]
+    # Check if frame is existed
+    def is_btc_frame_existing(self, video_id, frame_index):
+        """Checks if a BTC frame exists in the database."""
+        self.cursor.execute("""
+            SELECT COUNT(*) FROM btc_frame WHERE video_id=%s AND frame_index=%s
+        """, (video_id, frame_index))
+        return self.cursor.fetchone()[0] > 0
+
     def insert_btc_frame(self, frame_data):
         """Inserts a new frame or replaces an existing one based on id."""
         if not self.connection:
@@ -250,7 +261,14 @@ class PostgresDB:
             return []
         self.cursor.execute("SELECT * FROM {} WHERE video_id=%s".format(table_name), (video_id,))
         return self.cursor.fetchall()
-    
+
+    def fetch_num_frame_by_video_id(self, video_id, table_name='frame'):
+        """Fetches the number of frames associated with a given video id."""
+        if not self.connection:
+            return 0
+        self.cursor.execute("SELECT COUNT(*) FROM {} WHERE video_id=%s".format(table_name), (video_id,))
+        return self.cursor.fetchone()[0]
+
     def update_frame(self, frame_id, frame_data):
         """Updates a frame's data."""
         if not self.connection:

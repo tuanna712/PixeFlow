@@ -334,6 +334,17 @@ class GCSManager:
         except Exception as e:
             print(f"Error getting total number of files: {e}")
             return 0
+        
+    def get_total_number_files_by_folder(self, folder='Keyframes_L21/'):
+        if not self.bucket:
+            return 0
+
+        try:
+            blobs = self.bucket.list_blobs(prefix=folder)
+            return sum(1 for _ in blobs)
+        except Exception as e:
+            print(f"Error getting total number of files by folder: {e}")
+            return 0
 """
 EXAMPLE USAGES
 # ==== Upload file to blob ====
