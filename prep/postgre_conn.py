@@ -205,7 +205,6 @@ class PostgresDB:
         if int(frame_data[2]) in processed_frame_indexes:
             print(f"Frame with video_id '{frame_data[1]}' and frame_index '{frame_data[2]}' already exists. Skipping insert.")
         else:
-            print("Add new one!")
             self.cursor.execute("""
             INSERT INTO btc_frame (id, video_id, frame_index, frame_path, frame_url)
             VALUES (%s, %s, %s, %s, %s)
