@@ -323,6 +323,17 @@ class GCSManager:
             print("Deleted all files.")
         except Exception as e:
             print(f"Error deleting files: {e}")
+
+    def get_total_number_files(self):
+        if not self.bucket:
+            return 0
+
+        try:
+            blobs = self.bucket.list_blobs()
+            return sum(1 for _ in blobs)
+        except Exception as e:
+            print(f"Error getting total number of files: {e}")
+            return 0
 """
 EXAMPLE USAGES
 # ==== Upload file to blob ====

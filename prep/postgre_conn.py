@@ -206,7 +206,7 @@ class PostgresDB:
             print(f"Frame with video_id '{frame_data[1]}' and frame_index '{frame_data[2]}' already exists. Skipping insert.")
         else:
             self.cursor.execute("""
-            INSERT INTO frame (id, video_id, frame_index, frame_path, frame_url)
+            INSERT INTO btc_frame (id, video_id, frame_index, frame_path, frame_url)
             VALUES (%s, %s, %s, %s, %s)
             ON CONFLICT (id) DO UPDATE SET
                 video_id = EXCLUDED.video_id,
