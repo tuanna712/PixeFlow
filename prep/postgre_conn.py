@@ -203,6 +203,7 @@ class PostgresDB:
             return [row[0] for row in self.cursor.fetchall()]
         processed_frame_indexes = get_frame_indexes_by_video_id(frame_data[1])
         print(frame_data[2], processed_frame_indexes)
+        print(type(frame_data[2]), type(processed_frame_indexes[0]))
         if frame_data[2] in processed_frame_indexes:
             print(f"Frame with video_id '{frame_data[1]}' and frame_index '{frame_data[2]}' already exists. Skipping insert.")
         else:
