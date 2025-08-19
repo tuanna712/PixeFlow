@@ -348,7 +348,14 @@ class PostgresDB:
             return None
         self.cursor.execute("SELECT * FROM video WHERE id=%s", (video_id,))
         return self.cursor.fetchone()
-    
+
+    def fetch_video_by_name(self, video_name):
+        """Fetches a single video id by its name."""
+        if not self.connection:
+            return None
+        self.cursor.execute("SELECT id FROM video WHERE name=%s", (video_name,))
+        return self.cursor.fetchone()
+
     def update_video(self, video_id, video_data):
         """Updates a video's data."""
         if not self.connection:
