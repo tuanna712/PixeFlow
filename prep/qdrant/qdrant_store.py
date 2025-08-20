@@ -45,15 +45,30 @@ class QdrantVectorStore:
         self.client.create_payload_index(
             collection_name=self.collection,
             field_name="video_id",
-            field_schema=models.PayloadSchemaType.KEYWORD
+            field_schema=models.PayloadSchemaType.UUID
         )
         self.client.create_payload_index(
             collection_name=self.collection,
-            field_name="frame_id",
-            field_schema=models.PayloadSchemaType.KEYWORD
+            field_name="video_name",
+            field_schema=models.PayloadSchemaType.TEXT
+        )
+        self.client.create_payload_index(
+            collection_name=self.collection,
+            field_name="frame_index",
+            field_schema=models.PayloadSchemaType.INTEGER
+        )
+        self.client.create_payload_index(
+            collection_name=self.collection,
+            field_name="file_index",
+            field_schema=models.PayloadSchemaType.INTEGER
+        )
+        self.client.create_payload_index(
+            collection_name=self.collection,
+            field_name="root_folder",
+            field_schema=models.PayloadSchemaType.TEXT
         )
     
-    def upsert(self, record_id: int, embeddings: Dict[str, List[float]], payload: Dict[str, Any]):
+    def upsert(self, record_id, embeddings: Dict[str, List[float]], payload: Dict[str, Any]):
         for vec_type, size in self.vector_sizes.items():
             if vec_type in embeddings and len(embeddings[vec_type]) != size:
                 raise ValueError(f"{vec_type} embedding size ({len(embeddings[vec_type])}) does not match expected size ({size})")
@@ -84,7 +99,7 @@ class QdrantVectorStore:
         if any(np.isnan(x) for x in vector):
             raise ValueError(f"{vec_type} embedding contains invalid values (NaN)")
 
-    def upsert_text_vector(self, record_id: int, text_vector: List[float], payload: Dict[str, Any] = None):
+    def upsert_text_vector(self, record_id, text_vector: List[float], payload: Dict[str, Any] = None):
         self._validate_vector("text", text_vector)
         points = [
             models.PointStruct(
@@ -95,7 +110,7 @@ class QdrantVectorStore:
         ]
         self.client.upload_points(collection_name=self.collection, points=points)
 
-    def upsert_image_vector(self, record_id: int, image_vector: List[float], payload: Dict[str, Any] = None):
+    def upsert_image_vector(self, record_id, image_vector: List[float], payload: Dict[str, Any] = None):
         self._validate_vector("image", image_vector)
         points = [
             models.PointStruct(
@@ -106,7 +121,7 @@ class QdrantVectorStore:
         ]
         self.client.upload_points(collection_name=self.collection, points=points)
     
-    def delete(self, record_id: int):
+    def delete(self, record_id):
         delete_vectors = ["image", "text"]
         self.client.delete_vectors(
             collection_name=self.collection,
@@ -119,14 +134,27 @@ class QdrantVectorStore:
                                 exact=True,
                             ).count
 
-    def retrieve(self, record_id: int) -> models.PointStruct | None:
+    def count_by_root_folder(self, root_folder: str) -> int:
+        return self.client.count(collection_name=self.collection,
+                                  exact=True,
+                                  count_filter=models.Filter(
+                                      must=[
+                                          models.FieldCondition(key="root_folder", match=models.MatchValue(value=root_folder)),
+                                      ]
+                                  )
+                                  ).count
+
+    def retrieve(self, record_id, vector=False):
+        """Return point as a dictionary"""
         points = self.client.retrieve(
             collection_name=self.collection,
             ids=[record_id],
+            with_payload=True,
+            with_vectors=vector
         )
-        return points[0].vector if points else None
-    
-    def search(self, embeddings: Dict[str, List[float]], top_k: int, 
+        return points
+
+    def search(self, embeddings: Dict[str, List[float]], top_k: int,
                filters: Dict[str, Any] | None = None) -> List[Tuple[int, float]]:
         if not embeddings:
             raise ValueError("At least one embedding must be provided for search")
@@ -214,3 +242,8 @@ class QdrantVectorStore:
         ).points
         current_hits = [(hit.id, hit.score) for hit in current_hits]
         return current_hits
+
+    def delete_collection(self):
+        self.client.delete_collection(
+            collection_name=self.collection
+        )
