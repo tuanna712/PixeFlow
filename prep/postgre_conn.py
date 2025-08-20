@@ -425,6 +425,18 @@ class PostgresDB:
         self.cursor.execute(query, params)
         self.connection.commit()
         return self.cursor.fetchall() if self.cursor.description else None
+    
+    #=====Frame===Object===Detection=====
+    def get_frame_objects(self, frame_id, table_name='frame'):
+        """Fetches objects detected in a specific frame."""
+        self.cursor.execute(f"SELECT objects FROM {table_name} WHERE id=%s", (frame_id,))
+        result = self.cursor.fetchone()
+        return result[0] if result else []
+
+    def update_frame_objects(self, frame_id, objects, table_name='frame'):
+        """Updates objects detected in a specific frame."""
+        self.cursor.execute(f"UPDATE {table_name} SET objects=%s WHERE id=%s", (objects, frame_id))
+        self.connection.commit()
 
     #=====Video===Operation=====
     def get_processed_videos(self):
@@ -510,6 +522,12 @@ class PostgresDB:
         else:
             self.cursor.execute("SELECT * FROM frame WHERE hold=TRUE")
         return self.cursor.fetchall()
+
+    def get_frame_by_video_id_frame_index(self, video_id, frame_index, table_name='frame'):
+        """Fetches a specific frame by video ID and frame index."""
+        self.cursor.execute(f"SELECT * FROM {table_name} WHERE video_id=%s AND frame_index=%s",
+                            (video_id, frame_index))
+        return self.cursor.fetchone()[0] if self.cursor.rowcount > 0 else None
 
     def get_frames_for_processing(self, hold_by, n_frames=20):
         """
