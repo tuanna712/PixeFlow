@@ -262,6 +262,13 @@ class PostgresDB:
         self.cursor.execute("SELECT * FROM {} WHERE video_id=%s".format(table_name), (video_id,))
         return self.cursor.fetchall()
 
+    def fetch_beit_emb_by_frame_id(self, frame_id, table_name='btc_frame'):
+        """Fetches the BEiT embeddings for a specific btc_frame."""
+        if not self.connection:
+            return None
+        self.cursor.execute("SELECT beit FROM {} WHERE id=%s".format(table_name), (frame_id,))
+        return self.cursor.fetchone()[0]
+
     def fetch_num_frame_by_video_id(self, video_id, table_name='frame'):
         """Fetches the number of frames associated with a given video id."""
         if not self.connection:
@@ -287,6 +294,16 @@ class PostgresDB:
         UPDATE frame SET processed=%s
         WHERE id=%s
         """, (processed, frame_id))
+        self.connection.commit()
+
+    def update_beit_processed(self, frame_id, value:bool=True, table_name='btc_frame'):
+        """Updates a frame's BEiT processed status."""
+        if not self.connection:
+            return
+        self.cursor.execute("""
+        UPDATE {} SET beit=%s
+        WHERE id=%s
+        """.format(table_name), (value, frame_id))
         self.connection.commit()
 
     def delete_frame(self, frame_id):
