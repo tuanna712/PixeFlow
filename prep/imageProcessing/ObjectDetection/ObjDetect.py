@@ -1,4 +1,4 @@
-import sys, base64
+import sys, base64, requests
 from PIL import Image
 from io import BytesIO
 from pathlib import Path
@@ -16,9 +16,17 @@ class ObjectDetector:
         self.model.to(self.device)
         self.returns= {}
 
-    def detect(self, image_bs64):
-        image_data = base64.b64decode(image_bs64)
-        image = Image.open(BytesIO(image_data)).convert("RGB")
+    def detect(self, image_input, type='bs64'):
+        if type=='bs64':
+            image_data = base64.b64decode(image_input)
+            image = Image.open(BytesIO(image_data)).convert("RGB")
+        elif type=='path':
+            image = Image.open(image_input).convert("RGB")
+        elif type=='url':
+            response = requests.get(image_input)
+            response.raise_for_status()
+            image = Image.open(BytesIO(response.content)).convert("RGB")
+
         inputs = self.processor(images=image, return_tensors="pt").to(self.device)
         outputs = self.model(**inputs)
 
@@ -37,12 +45,19 @@ class ObjectDetector:
 
         return self.returns
 
-    def visualize(self, image_bs64):
+    def visualize(self, image_input, type='bs64'):
         import matplotlib.pyplot as plt
         import matplotlib.patches as patches
 
-        image_data = base64.b64decode(image_bs64)
-        image = Image.open(BytesIO(image_data)).convert("RGB")
+        if type=='bs64':
+            image_data = base64.b64decode(image_input)
+            image = Image.open(BytesIO(image_data)).convert("RGB")
+        elif type=='path':
+            image = Image.open(image_input).convert("RGB")
+        elif type=='url':
+            response = requests.get(image_input)
+            response.raise_for_status()
+            image = Image.open(BytesIO(response.content)).convert("RGB")
 
         plt.figure(figsize=(12, 12))
         plt.imshow(image)
