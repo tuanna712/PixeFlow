@@ -7,7 +7,7 @@ from transformers import AutoModel, AutoTokenizer
 from torchvision.transforms.functional import InterpolationMode
 
 class DescGenerator:
-    def __init__(self, model_name="data/Vintern/pretrained/Vintern-1B-v3_5"):
+    def __init__(self, max_new_tokens= 128, model_name="data/Vintern/pretrained/Vintern-1B-v3_5"):
         self.IMAGENET_MEAN = (0.485, 0.456, 0.406)
         self.IMAGENET_STD = (0.229, 0.224, 0.225)
         self.tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True, use_fast=False)
@@ -19,7 +19,7 @@ class DescGenerator:
                 use_flash_attn=False,
             ).eval().cuda()
         
-        self.generation_config = dict(max_new_tokens= 512, do_sample=False, num_beams = 3, repetition_penalty=3.5)
+        self.generation_config = dict(max_new_tokens= max_new_tokens, do_sample=False, num_beams = 3, repetition_penalty=3.5)
 
     def build_transform(self, input_size):
         MEAN, STD = self.IMAGENET_MEAN, self.IMAGENET_STD
