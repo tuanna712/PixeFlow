@@ -600,6 +600,12 @@ class PostgresDB:
                             (description, frame_id))
         self.connection.commit()
 
+    def update_frame_ocr(self, frame_id, ocr_text, table_name='btc_frame'):
+        """Updates the OCR data of a frame."""
+        self.cursor.execute(f"UPDATE {table_name} SET ocr=%s WHERE id = %s",
+                            (ocr_text, frame_id))
+        self.connection.commit()
+
     def check_frame_description(self, frame_id, table_name='btc_frame'):
         """Fetches the description of a frame."""
         self.cursor.execute(f"SELECT description FROM {table_name} WHERE id=%s", (frame_id,))
