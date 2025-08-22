@@ -227,18 +227,18 @@ class PostgresDB:
             """, frame_data)
             self.connection.commit()
 
-    def fetch_frames(self):
+    def fetch_frames(self, table_name='btc_frame'):
         """Fetches all frames from the database."""
         if not self.connection:
             return []
-        self.cursor.execute("SELECT * FROM frame")
+        self.cursor.execute("SELECT * FROM {}".format(table_name))
         return self.cursor.fetchall()
-    
-    def fetch_unprocessed_frames(self):
+
+    def fetch_unprocessed_frames(self, table_name='btc_frame'):
         """Fetches the ids of all unprocessed frames."""
         if not self.connection:
             return []
-        self.cursor.execute("SELECT id FROM frame WHERE processed=FALSE")
+        self.cursor.execute("SELECT id FROM {} WHERE processed=FALSE".format(table_name))
         return self.cursor.fetchall()
     
     def fetch_processed_frames(self):
@@ -247,12 +247,12 @@ class PostgresDB:
             return []
         self.cursor.execute("SELECT id FROM frame WHERE processed=TRUE")
         return self.cursor.fetchall()
-    
-    def fetch_frame_by_id(self, frame_id):
+
+    def fetch_frame_by_id(self, frame_id, table_name='btc_frame'):
         """Fetches a single frame by its id."""
         if not self.connection:
             return None
-        self.cursor.execute("SELECT * FROM frame WHERE id=%s", (frame_id,))
+        self.cursor.execute("SELECT * FROM {} WHERE id=%s".format(table_name), (frame_id,))
         return self.cursor.fetchone()
     
     def fetch_frames_by_video_id(self, video_id, table_name='frame'):
@@ -262,11 +262,11 @@ class PostgresDB:
         self.cursor.execute("SELECT * FROM {} WHERE video_id=%s".format(table_name), (video_id,))
         return self.cursor.fetchall()
 
-    def fetch_all_beit(self):
+    def fetch_all_beit(self, table_name='btc_frame'):
         """Fetches all BEiT embeddings."""
         if not self.connection:
             return []
-        self.cursor.execute("SELECT * FROM btc_frame WHERE beit=TRUE")
+        self.cursor.execute("SELECT * FROM {} WHERE beit=TRUE".format(table_name))
         return self.cursor.fetchall()
 
     def fetch_beit_emb_by_frame_id(self, frame_id, table_name='btc_frame'):
@@ -608,3 +608,14 @@ class PostgresDB:
             return False
         else:
             return True
+
+    def get_frame_id_where_desc_not_null(self, video_id, table_name='btc_frame'):
+        """Fetches the frame IDs where the description is not NULL, filter by video_ids"""
+        self.cursor.execute(f"SELECT id FROM {table_name} WHERE description IS NOT NULL AND video_id=%s", (video_id,))
+        return [row[0] for row in self.cursor.fetchall()]
+
+    def set_desc_as_null(self, frame_id, table_name='btc_frame'):
+        """Sets the description of a frame to NULL."""
+        self.cursor.execute(f"UPDATE {table_name} SET description=NULL WHERE id = %s",
+                            (frame_id,))
+        self.connection.commit()

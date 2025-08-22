@@ -73,6 +73,11 @@ class QdrantVectorStore:
             field_name="description",
             field_schema=models.PayloadSchemaType.TEXT
         )
+        self.client.create_payload_index(
+            collection_name=self.collection,
+            field_name="ocr",
+            field_schema=models.PayloadSchemaType.TEXT
+        )
     
     def upsert(self, record_id, embeddings: Dict[str, List[float]], payload: Dict[str, Any]):
         for vec_type, size in self.vector_sizes.items():
