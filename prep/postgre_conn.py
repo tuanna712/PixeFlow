@@ -262,6 +262,13 @@ class PostgresDB:
         self.cursor.execute("SELECT * FROM {} WHERE video_id=%s".format(table_name), (video_id,))
         return self.cursor.fetchall()
 
+    def fetch_all_beit(self):
+        """Fetches all BEiT embeddings."""
+        if not self.connection:
+            return []
+        self.cursor.execute("SELECT * FROM btc_frame WHERE beit=TRUE")
+        return self.cursor.fetchall()
+
     def fetch_beit_emb_by_frame_id(self, frame_id, table_name='btc_frame'):
         """Fetches the BEiT embeddings for a specific btc_frame."""
         if not self.connection:
@@ -586,3 +593,18 @@ class PostgresDB:
                             (processed_by, frame_id))
         print(f"Frame {frame_id} processed by {processed_by}.")
         self.connection.commit()
+
+    def update_frame_description(self, frame_id, description, table_name='btc_frame'):
+        """Updates the description of a frame."""
+        self.cursor.execute(f"UPDATE {table_name} SET description=%s WHERE id = %s",
+                            (description, frame_id))
+        self.connection.commit()
+
+    def check_frame_description(self, frame_id, table_name='btc_frame'):
+        """Fetches the description of a frame."""
+        self.cursor.execute(f"SELECT description FROM {table_name} WHERE id=%s", (frame_id,))
+        description = self.cursor.fetchone()[0] if self.cursor.rowcount > 0 else None
+        if not description:
+            return False
+        else:
+            return True
