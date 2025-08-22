@@ -67,6 +67,12 @@ class QdrantVectorStore:
             field_name="root_folder",
             field_schema=models.PayloadSchemaType.TEXT
         )
+
+        self.client.create_payload_index(
+            collection_name=self.collection,
+            field_name="description",
+            field_schema=models.PayloadSchemaType.TEXT
+        )
     
     def upsert(self, record_id, embeddings: Dict[str, List[float]], payload: Dict[str, Any]):
         for vec_type, size in self.vector_sizes.items():
@@ -120,7 +126,13 @@ class QdrantVectorStore:
             )
         ]
         self.client.upload_points(collection_name=self.collection, points=points)
-    
+
+    def upsert_payload(self, record_id, payload: Dict[str, Any]):
+        self.client.set_payload(collection_name=self.collection, 
+                                points=[record_id], 
+                                payload=payload,
+                                )
+
     def delete(self, record_id):
         delete_vectors = ["image", "text"]
         self.client.delete_vectors(
