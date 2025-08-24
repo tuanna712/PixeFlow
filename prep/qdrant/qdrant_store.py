@@ -112,14 +112,22 @@ class QdrantVectorStore:
 
     def upsert_text_vector(self, record_id, text_vector: List[float], payload: Dict[str, Any] = None):
         self._validate_vector("text", text_vector)
-        points = [
-            models.PointStruct(
-                id=record_id,
-                vector={"text": text_vector},
-                payload=payload
-            )
-        ]
-        self.client.upload_points(collection_name=self.collection, points=points)
+        self.client.update_vectors(
+            collection_name=self.collection,
+            points=[
+                models.PointVectors(
+                    id=record_id,
+                    vector={
+                        "text": text_vector,
+                    },
+                ),
+            ]
+        )
+        self.client.set_payload(
+            collection_name=self.collection,
+            points=[record_id],
+            payload=payload,
+        )
 
     def upsert_image_vector(self, record_id, image_vector: List[float], payload: Dict[str, Any] = None):
         self._validate_vector("image", image_vector)
