@@ -268,6 +268,13 @@ class PostgresDB:
             return []
         self.cursor.execute("SELECT * FROM {} WHERE beit=TRUE".format(table_name))
         return self.cursor.fetchall()
+    
+    def fetch_all_clip(self, table_name='btc_frame'):
+        """Fetches all CLIP embeddings."""
+        if not self.connection:
+            return []
+        self.cursor.execute("SELECT * FROM {} WHERE clip=TRUE".format(table_name))
+        return self.cursor.fetchall()
 
     def fetch_beit_emb_by_frame_id(self, frame_id, table_name='btc_frame'):
         """Fetches the BEiT embeddings for a specific btc_frame."""
