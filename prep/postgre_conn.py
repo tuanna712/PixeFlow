@@ -571,10 +571,10 @@ class PostgresDB:
             self.cursor.execute("SELECT * FROM frame WHERE hold=TRUE")
         return self.cursor.fetchall()
 
-    def get_frame_by_video_id_frame_index(self, video_id, frame_index, table_name='frame'):
-        """Fetches a specific frame by video ID and frame index."""
-        self.cursor.execute(f"SELECT * FROM {table_name} WHERE video_id=%s AND frame_index=%s",
-                            (video_id, frame_index))
+    def get_frame_by_video_id_frame_index(self, video_id, file_index, table_name='btc_frame'):
+        """Fetches a specific frame by video ID and file index."""
+        self.cursor.execute(f"SELECT * FROM {table_name} WHERE video_id=%s AND file_index=%s",
+                            (video_id, file_index))
         return self.cursor.fetchone()[0] if self.cursor.rowcount > 0 else None
 
     def get_frames_for_processing(self, hold_by, n_frames=20):
