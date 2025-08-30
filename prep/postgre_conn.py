@@ -161,7 +161,13 @@ class PostgresDB:
             hold BOOLEAN DEFAULT FALSE,
             hold_by TEXT DEFAULT NULL,
             processed_by TEXT DEFAULT NULL,
-            FOREIGN KEY (video_id) REFERENCES video(id)
+                            
+            beit BOOLEAN DEFAULT FALSE,
+            clip BOOLEAN DEFAULT FALSE,
+            batch INTEGER,
+            file_index INTEGER,
+                            
+            FOREIGN KEY (video_id) REFERENCES video(id),
         )
         """)
         print("Tables 'BTC_Frame' created or already exist.")
