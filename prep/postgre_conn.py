@@ -330,6 +330,14 @@ class PostgresDB:
         """.format(table_name), (value, frame_id))
         self.connection.commit()
 
+    def update_frame_index(self, frame_id, new_index, table_name='btc_frame'):
+        """Updates a frame's index."""
+        self.cursor.execute("""
+        UPDATE {} SET frame_index=%s
+        WHERE id=%s
+        """.format(table_name), (new_index, frame_id))
+        self.connection.commit()
+
     def update_clip_processed(self, frame_id, value:bool=True, table_name='btc_frame'):
         self.cursor.execute("""
         UPDATE {} SET clip=%s
